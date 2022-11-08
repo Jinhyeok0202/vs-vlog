@@ -5,6 +5,8 @@ import { AiOutlineSearch } from "react-icons/ai";
 import Accordion from "../components/Accordion";
 import Content from "../components/Content";
 import AppContext from "../context/AppContext";
+import { getPostOne } from "../common/common.function";
+import PostWrap from "../components/PostWrap";
 
 function Main() {
   const [selected, setSelected] = useState(null);
@@ -17,8 +19,18 @@ function Main() {
       path: "EXPLORER",
       content: (
         <>
-          <Accordion title="OPEN POSTS" isBold={true}>
-            내요요요옹
+          <Accordion title="OPEN POSTS" isBold={true} initialExpanded={true}>
+            {openPost.map((one, index) => {
+              const data = getPostOne(postData, one);
+              return (
+                <PostWrap
+                  path={data.path}
+                  title={data.title}
+                  isClose={true}
+                  key={index}
+                />
+              );
+            })}
           </Accordion>
           <Accordion title="VSCODE" isBold={true}>
             {postData.map((one, index) => (
@@ -60,18 +72,7 @@ function Main() {
       <RightWrap selected={selected}>
         <RightHeader>
           {openPost.map((one, index) => {
-            const pathArr = one.split("/").filter(Boolean);
-
-            const data = pathArr.reduce((sum, current, index) => {
-              const lastPath = pathArr.length - 1 === index;
-              const target = sum.find(
-                (one) =>
-                  one.title === current &&
-                  one.type === (lastPath ? "post" : "directory")
-              );
-
-              return lastPath ? target : target?.children;
-            }, postData);
+            const data = getPostOne(postData, one);
 
             return (
               <div
@@ -124,16 +125,32 @@ const RightHeader = styled.div`
   height: 50px;
   display: flex;
   overflow-x: scroll;
-  background-color: #252526;
+  background-color: ${({ theme }) => theme.color.secondary};
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  &:hover::-webkit-scrollbar-thumb {
+    display: block;
+  }
+
   > div {
+    min-width: 150px;
     width: 150px;
     padding: 10px;
-    background-color: #252526;
+    background-color: ${({ theme }) => theme.color.secondary};
     position: relative;
     cursor: pointer;
     &.selected {
-      background-color: #1e1e1e;
+      background-color: ${({ theme }) => theme.color.primary};
     }
+    &:not(.selected) > span {
+      display: none;
+    }
+    &:hover > span {
+      display: block;
+    }
+
     > span {
       position: absolute;
       right: 15px;
@@ -148,10 +165,11 @@ const IconWrap = styled.div`
   padding: 10px 0;
   cursor: pointer;
 
-  border-left: ${({ selected }) => (selected ? 2 : 0)}px solid white;
-
-  > svg {
-    color: ${({ selected }) => (selected ? "white" : "#7a7a7a")};
+  border-left: ${({ theme, selected }) =>
+      `${selected ? 2 : 0}px solid ${theme.color.text}`}
+    > svg {
+    color: ${({ theme, selected }) =>
+      selected ? theme.color.text : "#7a7a7a"};
   }
 `;
 
@@ -164,14 +182,14 @@ const LeftBar = styled.div`
   width: 50px;
   min-width: 50px;
   height: 100%;
-  background-color: #333333;
+  background-color: ${({ theme }) => theme.color.third}; ;
 `;
 
 const LeftContent = styled.div`
   width: 320px;
   min-width: 320px;
   height: 100%;
-  background-color: #252526;
+  background-color: ${({ theme }) => theme.color.secondary};
   padding: 10px;
 
   > p {
@@ -183,5 +201,5 @@ const LeftContent = styled.div`
 const RightContent = styled.div`
   width: 100%;
   height: calc(100% - 50px);
-  background-color: #1e1e1e;
+  background-color: ${({ theme }) => theme.color.primary};
 `;

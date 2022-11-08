@@ -1,3 +1,6 @@
+import { createGlobalStyle } from "styled-components";
+
+export const GlobalStyle = createGlobalStyle`
 * {
   margin: 0;
   padding: 0;
@@ -5,7 +8,7 @@
 }
 
 *:not(svg, path) {
-  color: white;
+  color: ${({ theme }) => theme.color.text};;
 }
 *::-webkit-scrollbar {
   width: 4px; /* 스크롤바의 너비 */
@@ -19,7 +22,8 @@
 }
 
 *::-webkit-scrollbar-track {
-  background: #1e1e1e; /*스크롤바 뒷 배경 색상*/
+  background-color: ${({ theme }) =>
+    theme.color.primary}; /*스크롤바 뒷 배경 색상*/
 }
 
 body {
@@ -35,3 +39,5 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+`;
