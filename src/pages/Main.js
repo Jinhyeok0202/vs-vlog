@@ -10,8 +10,15 @@ import PostWrap from "../components/PostWrap";
 
 function Main() {
   const [selected, setSelected] = useState(null);
-  const { selectedPost, postData, openPost, setSelectedPost, setOpenPost } =
-    useContext(AppContext);
+  const {
+    setTheme,
+    theme,
+    selectedPost,
+    postData,
+    openPost,
+    setSelectedPost,
+    setOpenPost,
+  } = useContext(AppContext);
 
   const listArr = [
     {
@@ -50,17 +57,27 @@ function Main() {
   return (
     <Wrap>
       <LeftBar>
-        {listArr.map((one, index) => (
-          <IconWrap
-            selected={selected === index}
+        <div>
+          {listArr.map((one, index) => (
+            <IconWrap
+              selected={selected === index}
+              onClick={() => {
+                setSelected(selected === index ? null : index);
+              }}
+              key={index}
+            >
+              {one.icon}
+            </IconWrap>
+          ))}
+        </div>
+        <div>
+          <div
+            className={theme}
             onClick={() => {
-              setSelected(selected === index ? null : index);
+              setTheme(theme === "dark" ? "light" : "dark");
             }}
-            key={index}
-          >
-            {one.icon}
-          </IconWrap>
-        ))}
+          />
+        </div>
       </LeftBar>
 
       {selected !== null && listArr[selected] && (
@@ -103,7 +120,32 @@ function Main() {
             );
           })}
         </RightHeader>
-        <RightContent selected={selected}>{selectedPost}</RightContent>
+        <RightContent selected={selected}>
+          {(() => {
+            const data = getPostOne(postData, selectedPost);
+
+            return (
+              data && (
+                <>
+                  <p>{data.path}</p>
+                  <div>
+                    <h1>{data.title}</h1>
+                    <p>
+                      <strong>Jinhyeok</strong> | {data.data?.date}
+                    </p>
+                    <div>
+                      {data.data?.tag.map((one, index) => (
+                        <span key={index}>{one}</span>
+                      ))}
+                    </div>
+                    <div>{data.data?.content}</div>
+                  </div>
+                </>
+              )
+            );
+          })()}
+          {selectedPost}
+        </RightContent>
       </RightWrap>
     </Wrap>
   );
@@ -182,7 +224,43 @@ const LeftBar = styled.div`
   width: 50px;
   min-width: 50px;
   height: 100%;
-  background-color: ${({ theme }) => theme.color.third}; ;
+  background-color: ${({ theme }) => theme.color.third};
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+
+  > div:last-child {
+    padding-bottom: 30px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    > div {
+      height: 50px;
+      width: 30px;
+      /* background: ${({ theme }) => theme.color.primary}; */
+      background: red;
+      border-radius: 50px;
+      position: relative;
+
+      cursor: pointer;
+      &::after {
+        content: "";
+        position: absolute;
+        top: 6px;
+        left: 5px;
+
+        width: 20px;
+        height: 20px;
+        border-radius: 20px;
+        /* background-color: ${({ theme }) => theme.color.selected}; */
+        background-color: orange;
+        transition: 0.3s;
+      }
+      &.light::after {
+        top: 25px;
+      }
+    }
+  }
 `;
 
 const LeftContent = styled.div`
@@ -202,4 +280,35 @@ const RightContent = styled.div`
   width: 100%;
   height: calc(100% - 50px);
   background-color: ${({ theme }) => theme.color.primary};
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  > p {
+    width: 100%;
+    color: #7a7a7a;
+  }
+
+  > div {
+    width: 100%;
+    max-width: 600px;
+    > h1 {
+      padding: 10px 0 20px 0;
+    }
+    > p {
+      padding-bottom: 20px;
+      margin-bottom: 10pxs;
+      color: #7a7a7a;
+      border-bottom: 1px solid ${({ theme }) => theme.color.selected};
+    }
+    > div:nth-child(3) {
+      padding: 10px 0 20px 0;
+      > span {
+        padding: 5px 10px;
+        margin-right: 10px;
+        border-radius: 10px;
+        background-color: ${({ theme }) => theme.color.selected};
+      }
+    }
+  }
 `;

@@ -12,4 +12,8 @@ export default React.createContext({
   // 게시물 데이터
   postData: [],
   setPostData: () => {},
+
+  //테마 관련
+  theme: "",
+  setTheme: () => {},
 });
