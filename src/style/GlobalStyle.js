@@ -12,6 +12,7 @@ export const GlobalStyle = createGlobalStyle`
   color: ${({ theme }) => theme.color.text};;
 }
 *::-webkit-scrollbar {
+  height: 7px;
   width: 4px; /* 스크롤바의 너비 */
 }
 
